@@ -53,19 +53,19 @@ jobs:
         id: collect-test-results
         if: always()
         run: |
-          if [ -f "playwright-report/report.json" ]; then
+          if [ -f "playwright-report/test-results.json" ]; then
             # Use jq if available
             if command -v jq >/dev/null 2>&1; then
-              PASSED=$(jq '.stats.expected' playwright-report/report.json 2>/dev/null || echo 0)
-              FAILED=$(jq '.stats.unexpected' playwright-report/report.json 2>/dev/null || echo 0)
-              FLAKY=$(jq '.stats.flaky' playwright-report/report.json 2>/dev/null || echo 0)
-              SKIPPED=$(jq '.stats.skipped' playwright-report/report.json 2>/dev/null || echo 0)
+              PASSED=$(jq '.stats.expected' playwright-report/test-results.json 2>/dev/null || echo 0)
+              FAILED=$(jq '.stats.unexpected' playwright-report/test-results.json 2>/dev/null || echo 0)
+              FLAKY=$(jq '.stats.flaky' playwright-report/test-results.json 2>/dev/null || echo 0)
+              SKIPPED=$(jq '.stats.skipped' playwright-report/test-results.json 2>/dev/null || echo 0)
             else
               # Fallback to grep if jq is not available
-              PASSED=$(grep -o '"expected":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
-              FAILED=$(grep -o '"unexpected":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
-              FLAKY=$(grep -o '"flaky":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
-              SKIPPED=$(grep -o '"skipped":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
+              PASSED=$(grep -o '"expected":[0-9]\+' playwright-report/test-results.json | cut -d':' -f2 || echo 0)
+              FAILED=$(grep -o '"unexpected":[0-9]\+' playwright-report/test-results.json | cut -d':' -f2 || echo 0)
+              FLAKY=$(grep -o '"flaky":[0-9]\+' playwright-report/test-results.json | cut -d':' -f2 || echo 0)
+              SKIPPED=$(grep -o '"skipped":[0-9]\+' playwright-report/test-results.json | cut -d':' -f2 || echo 0)
             fi
           else
             PASSED=0
