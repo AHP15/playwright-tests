@@ -137,7 +137,7 @@ jobs:
               skipped: testsSkipped > 0 ? `${emogies.skipped} ${testsSkipped}` : 'No tests skipped'
             };
 
-            const commentBody = `## Playwright Test Results ${testsFailed > 0 ? '❌': '✅' }
+            const commentBody = `## Playwright Test Results ${testsFailed > 0 ? ' ❌': ' ✅' }
 
             | Status | Count |
             | ------ | ----- |
@@ -148,7 +148,7 @@ jobs:
 
             [View Full Test Report](${reportUrl})
 
-            Last updated ${Date.now()}
+            Last updated ${new Date().toLocaleString()}
             `;
 
             // Find existing comment if any
@@ -182,25 +182,3 @@ jobs:
               });
               console.log(`Created comment #${newComment.id}`);
             }
-
-      - name: Create GitHub Actions Summary
-        run: |
-          REPO_OWNER=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1)
-          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
-          REPORT_URL="https://$REPO_OWNER.github.io/$REPO_NAME/"
-
-          TESTS_PASSED="${{ needs.test.outputs.tests_passed || 0 }}"
-          TESTS_FAILED="${{ needs.test.outputs.tests_failed || 0 }}"
-          TESTS_FLAKY="${{ needs.test.outputs.tests_flaky || 0 }}"
-          TESTS_SKIPPED="${{ needs.test.outputs.tests_skipped || 0 }}"
-
-          echo "## Playwright Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
-          echo "| ------ | ----- |" >> $GITHUB_STEP_SUMMARY
-          echo "| Passed | $TESTS_PASSED |" >> $GITHUB_STEP_SUMMARY
-          echo "| Failed | $TESTS_FAILED |" >> $GITHUB_STEP_SUMMARY
-          echo "| Flaky | $TESTS_FLAKY |" >> $GITHUB_STEP_SUMMARY
-          echo "| Skipped | $TESTS_SKIPPED |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[View Full Test Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
