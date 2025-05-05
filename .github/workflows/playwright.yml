@@ -5,6 +5,12 @@ on:
   pull_request:
     branches: [main, dev, stg, prod]
 
+# Add this permissions block at the top level
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   wait-test-url:
     runs-on: ubuntu-latest
@@ -23,12 +29,6 @@ jobs:
       BASE_URL: ${{ needs.wait-test-url.outputs.deployment_url }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    outputs:
-      test_outcome: ${{ steps.test-outcome.outputs.outcome }}
-      tests_passed: ${{ steps.collect-test-results.outputs.passed }}
-      tests_failed: ${{ steps.collect-test-results.outputs.failed }}
-      tests_flaky: ${{ steps.collect-test-results.outputs.flaky }}
-      tests_skipped: ${{ steps.collect-test-results.outputs.skipped }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
