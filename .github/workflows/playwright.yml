@@ -5,11 +5,13 @@ on:
   pull_request:
     branches: [main, dev, stg, prod]
 
-# Add this permissions block at the top level
+# Adding more permissions to allow comment creation
 permissions:
   contents: write
   pages: write
   id-token: write
+  issues: write
+  pull-requests: write
 
 jobs:
   wait-test-url:
@@ -29,6 +31,12 @@ jobs:
       BASE_URL: ${{ needs.wait-test-url.outputs.deployment_url }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    outputs:
+      test_outcome: ${{ steps.test-outcome.outputs.outcome }}
+      tests_passed: ${{ steps.collect-test-results.outputs.passed }}
+      tests_failed: ${{ steps.collect-test-results.outputs.failed }}
+      tests_flaky: ${{ steps.collect-test-results.outputs.flaky }}
+      tests_skipped: ${{ steps.collect-test-results.outputs.skipped }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,6 +49,18 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
         continue-on-error: true
+      - name: Collect test results
+        id: collect-test-results
+        if: always()
+        run: |
+          echo "::set-output name=passed::$(grep -o '"passed":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
+          echo "::set-output name=failed::$(grep -o '"failed":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
+          echo "::set-output name=flaky::$(grep -o '"flaky":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
+          echo "::set-output name=skipped::$(grep -o '"skipped":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
+      - name: Set test outcome
+        id: test-outcome
+        if: always()
+        run: echo "::set-output name=outcome::${{ job.status }}"
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -63,3 +83,91 @@ jobs:
         with:
           folder: playwright-report
           branch: gh-pages
+  comment:
+    needs: [test, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or Update Comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        env:
+          TESTS_PASSED: ${{ needs.test.outputs.tests_passed || '0' }}
+          TESTS_FAILED: ${{ needs.test.outputs.tests_failed || '0' }}
+          TESTS_FLAKY: ${{ needs.test.outputs.tests_flaky || '0' }}
+          TESTS_SKIPPED: ${{ needs.test.outputs.tests_skipped || '0' }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repoName = context.repo.repo;
+            const owner = context.repo.owner;
+            const reportUrl = `https://${owner}.github.io/${repoName}/`;
+
+            // Test summary from environment variables
+            const testsPassed = process.env.TESTS_PASSED;
+            const testsFailed = process.env.TESTS_FAILED;
+            const testsFlaky = process.env.TESTS_FLAKY;
+            const testsSkipped = process.env.TESTS_SKIPPED;
+
+            const commentBody = `## Playwright Test Results
+
+            | Status | Count |
+            | ------ | ----- |
+            | Passed | ${testsPassed} |
+            | Failed | ${testsFailed} |
+            | Flaky | ${testsFlaky} |
+            | Skipped | ${testsSkipped} |
+
+            [View Full Test Report](${reportUrl})
+            `;
+
+            // Find existing comment if any
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo: repoName,
+              issue_number
+            });
+
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Playwright Test Results');
+            });
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner,
+                repo: repoName,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner,
+                repo: repoName,
+                issue_number,
+                body: commentBody
+              });
+            }
+
+      - name: Create GitHub Actions Summary
+        env:
+          TESTS_PASSED: ${{ needs.test.outputs.tests_passed || '0' }}
+          TESTS_FAILED: ${{ needs.test.outputs.tests_failed || '0' }}
+          TESTS_FLAKY: ${{ needs.test.outputs.tests_flaky || '0' }}
+          TESTS_SKIPPED: ${{ needs.test.outputs.tests_skipped || '0' }}
+        run: |
+          REPO_OWNER=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1)
+          REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
+          REPORT_URL="https://$REPO_OWNER.github.io/$REPO_NAME/"
+
+          echo "## Playwright Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "| ------ | ----- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Passed | $TESTS_PASSED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failed | $TESTS_FAILED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Flaky | $TESTS_FLAKY |" >> $GITHUB_STEP_SUMMARY
+          echo "| Skipped | $TESTS_SKIPPED |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View Full Test Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
