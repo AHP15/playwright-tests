@@ -6,7 +6,7 @@ on:
     branches: [main, master]
 
 jobs:
-  test-url:
+  wait-test-url:
     runs-on: ubuntu-latest
     steps:
       - name: Waiting for 200 from the Vercel Preview
@@ -18,9 +18,9 @@ jobs:
     outputs:
       deployment_url: ${{ steps.waitForPreview.outputs.url }}
   test:
-    needs: test-url
+    needs: wait-test-url
     env:
-      BASE_URL: ${{ needs.test-url.outputs.deployment_url }}
+      BASE_URL: ${{ needs.wait-test-url.outputs.deployment_url }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
