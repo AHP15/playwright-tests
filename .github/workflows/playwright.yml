@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [main, dev, stg, prod]
 
-# Adding more permissions to allow comment creation
+# Adding permissions to allow comment creation
 permissions:
   contents: write
   pages: write
@@ -53,14 +53,35 @@ jobs:
         id: collect-test-results
         if: always()
         run: |
-          echo "::set-output name=passed::$(grep -o '"passed":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
-          echo "::set-output name=failed::$(grep -o '"failed":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
-          echo "::set-output name=flaky::$(grep -o '"flaky":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
-          echo "::set-output name=skipped::$(grep -o '"skipped":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)"
+          if [ -f "playwright-report/report.json" ]; then
+            # Use jq if available
+            if command -v jq >/dev/null 2>&1; then
+              PASSED=$(jq '.stats.expected' playwright-report/report.json 2>/dev/null || echo 0)
+              FAILED=$(jq '.stats.unexpected' playwright-report/report.json 2>/dev/null || echo 0)
+              FLAKY=$(jq '.stats.flaky' playwright-report/report.json 2>/dev/null || echo 0)
+              SKIPPED=$(jq '.stats.skipped' playwright-report/report.json 2>/dev/null || echo 0)
+            else
+              # Fallback to grep if jq is not available
+              PASSED=$(grep -o '"expected":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
+              FAILED=$(grep -o '"unexpected":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
+              FLAKY=$(grep -o '"flaky":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
+              SKIPPED=$(grep -o '"skipped":[0-9]\+' playwright-report/report.json | cut -d':' -f2 || echo 0)
+            fi
+          else
+            PASSED=0
+            FAILED=0
+            FLAKY=0
+            SKIPPED=0
+          fi
+
+          echo "passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "failed=${FAILED}" >> $GITHUB_OUTPUT
+          echo "flaky=${FLAKY}" >> $GITHUB_OUTPUT
+          echo "skipped=${SKIPPED}" >> $GITHUB_OUTPUT
       - name: Set test outcome
         id: test-outcome
         if: always()
-        run: echo "::set-output name=outcome::${{ job.status }}"
+        run: echo "outcome=${{ job.status }}" >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -85,16 +106,11 @@ jobs:
           branch: gh-pages
   comment:
     needs: [test, deploy]
+    if: ${{ always() && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Create or Update Comment
-        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/github-script@v6
-        env:
-          TESTS_PASSED: ${{ needs.test.outputs.tests_passed || '0' }}
-          TESTS_FAILED: ${{ needs.test.outputs.tests_failed || '0' }}
-          TESTS_FLAKY: ${{ needs.test.outputs.tests_flaky || '0' }}
-          TESTS_SKIPPED: ${{ needs.test.outputs.tests_skipped || '0' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -102,11 +118,11 @@ jobs:
             const owner = context.repo.owner;
             const reportUrl = `https://${owner}.github.io/${repoName}/`;
 
-            // Test summary from environment variables
-            const testsPassed = process.env.TESTS_PASSED;
-            const testsFailed = process.env.TESTS_FAILED;
-            const testsFlaky = process.env.TESTS_FLAKY;
-            const testsSkipped = process.env.TESTS_SKIPPED;
+            // Test summary from outputs
+            const testsPassed = '${{ needs.test.outputs.tests_passed || 0 }}';
+            const testsFailed = '${{ needs.test.outputs.tests_failed || 0 }}';
+            const testsFlaky = '${{ needs.test.outputs.tests_flaky || 0 }}';
+            const testsSkipped = '${{ needs.test.outputs.tests_skipped || 0 }}';
 
             const commentBody = `## Playwright Test Results
 
@@ -140,26 +156,28 @@ jobs:
                 comment_id: botComment.id,
                 body: commentBody
               });
+              console.log(`Updated comment #${botComment.id}`);
             } else {
               // Create new comment
-              await github.rest.issues.createComment({
+              const { data: newComment } = await github.rest.issues.createComment({
                 owner,
                 repo: repoName,
                 issue_number,
                 body: commentBody
               });
+              console.log(`Created comment #${newComment.id}`);
             }
 
       - name: Create GitHub Actions Summary
-        env:
-          TESTS_PASSED: ${{ needs.test.outputs.tests_passed || '0' }}
-          TESTS_FAILED: ${{ needs.test.outputs.tests_failed || '0' }}
-          TESTS_FLAKY: ${{ needs.test.outputs.tests_flaky || '0' }}
-          TESTS_SKIPPED: ${{ needs.test.outputs.tests_skipped || '0' }}
         run: |
           REPO_OWNER=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1)
           REPO_NAME=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
           REPORT_URL="https://$REPO_OWNER.github.io/$REPO_NAME/"
+
+          TESTS_PASSED="${{ needs.test.outputs.tests_passed || 0 }}"
+          TESTS_FAILED="${{ needs.test.outputs.tests_failed || 0 }}"
+          TESTS_FLAKY="${{ needs.test.outputs.tests_flaky || 0 }}"
+          TESTS_SKIPPED="${{ needs.test.outputs.tests_skipped || 0 }}"
 
           echo "## Playwright Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
