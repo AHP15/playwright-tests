@@ -160,6 +160,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const repoName = context.repo.repo;
+            const owner = context.repo.owner;
             const reportUrl = '${{ needs.deploy.outputs.report_url }}';
 
             // Test summary from outputs
