@@ -114,10 +114,10 @@ jobs:
           fi
 
           # Generate timestamp in format YYYY-MM-DD-HHMMSS
-          TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
+          TIMESTAMP=$(date '+%Y-%m-%d-%H-%M-%S')
 
           # Create the folder name
-          FOLDER_NAME="reports/${PREFIX}/${TIMESTAMP}"
+          FOLDER_NAME="${PREFIX}/${TIMESTAMP}"
           echo "name=${FOLDER_NAME}" >> $GITHUB_OUTPUT
 
           # Create the report URL for GitHub Pages
@@ -147,7 +147,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: reports
+          folder: playwright-report
           branch: gh-pages
           clean: false
   comment:
