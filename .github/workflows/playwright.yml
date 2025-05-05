@@ -41,33 +41,6 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
         continue-on-error: true
-      - name: Determine test outcome
-        id: test-outcome
-        run: |
-          if [ ${{ steps.run-tests.outcome }} == 'success' ]; then
-            echo "outcome=success" >> $GITHUB_OUTPUT
-          else
-            echo "outcome=failure" >> $GITHUB_OUTPUT
-          fi
-      - name: Collect test results
-        id: collect-test-results
-        if: always()
-        run: |
-          if [ -f playwright-report/results.json ]; then
-            passed=$(grep -o '"passed":true' playwright-report/results.json | wc -l)
-            failed=$(grep -o '"status":"failed"' playwright-report/results.json | wc -l)
-            flaky=$(grep -o '"status":"flaky"' playwright-report/results.json | wc -l)
-            skipped=$(grep -o '"status":"skipped"' playwright-report/results.json | wc -l)
-            echo "passed=$passed" >> $GITHUB_OUTPUT
-            echo "failed=$failed" >> $GITHUB_OUTPUT
-            echo "flaky=$flaky" >> $GITHUB_OUTPUT
-            echo "skipped=$skipped" >> $GITHUB_OUTPUT
-          else
-            echo "passed=0" >> $GITHUB_OUTPUT
-            echo "failed=0" >> $GITHUB_OUTPUT
-            echo "flaky=0" >> $GITHUB_OUTPUT
-            echo "skipped=0" >> $GITHUB_OUTPUT
-          fi
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
@@ -76,140 +49,28 @@ jobs:
           retention-days: 30
   deploy-report:
     needs: test
-    if: always()
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-      pull-requests: write
-      issues: write
+    if: ${{ always() }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Upload Playwright Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          fetch-depth: 0 # Fetching all history for proper branch info
-
-      - name: Download Playwright report
-        uses: actions/download-artifact@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report
+          publish_branch: gh-pages
+          publish_dir: ./playwright-report
+          destination_dir: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+      - name: Comment on PR with Playwright Report URL
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: unsplash/comment-on-pr@v1.0.0
         with:
-          name: playwright-report
-          path: playwright-report
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Get branch name/ run ID
-        id: branch-name
-        run: |
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          echo "run_id=$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
-
-      - name: Organize report directories
-        run: |
-          mkdir -p gh-pages
-          if [ -d "gh-pages/${{ steps.branch-name.outputs.branch }}/${{ steps.branch-name.outputs.run_id }}" ]; then
-            rm -rf gh-pages/${{ steps.branch-name.outputs.branch }}/${{ steps.branch-name.outputs.run_id }}
-          fi
-          mkdir -p gh-pages/${{ steps.branch-name.outputs.branch }}/${{ steps.branch-name.outputs.run_id }}
-          cp -r playwright-report/* gh-pages/${{ steps.branch-name.outputs.branch }}/${{ steps.branch-name.outputs.run_id }}/
-      - name: Generate index page
-        run: |
-          echo "<!DOCTYPE html>" > gh-pages/index.html
-          echo "<html><head>" >> gh-pages/index.html
-          echo "<title>Playwright Test Reports</title>" >> gh-pages/index.html
-          echo "<style>" >> gh-pages/index.html
-          echo "body { font-family: Arial, sans-serif; margin: 40px; }" >> gh-pages/index.html
-          echo "h1 { color: #333; }" >> gh-pages/index.html
-          echo "ul { list-style-type: none; padding: 0; }" >> gh-pages/index.html
-          echo "li { margin: 8px 0; }" >> gh-pages/index.html
-          echo ".branch { font-weight: bold; font-size: 18px; margin-top: 20px; }" >> gh-pages/index.html
-          echo ".run { margin-left: 20px; }" >> gh-pages/index.html
-          echo ".latest { background-color: #f0f8ff; padding: 3px 8px; border-radius: 4px; color: #0366d6; }" >> gh-pages/index.html
-          echo "</style>" >> gh-pages/index.html
-          echo "</head><body>" >> gh-pages/index.html
-          echo "<h1>Playwright Test Reports</h1>" >> gh-pages/index.html
-          echo "<p>Last updated: $(date)</p>" >> gh-pages/index.html
-
-          # List all branches with reports
-          echo "<ul>" >> gh-pages/index.html
-          cd gh-pages
-          for branch in */; do
-            branch_name=${branch%/}
-            echo "<li class='branch'>Branch: $branch_name" >> index.html
-            echo "<ul>" >> index.html
-            
-            # Get all run IDs for this branch
-            runs=()
-            for run in "$branch_name"/*/; do
-              run_id=${run%/}
-              run_id=${run_id#*/}
-              runs+=("$run_id")
-            done
-            
-            # Sort runs in descending order
-            IFS=$'\n' sorted_runs=($(sort -nr <<<"${runs[*]}"))
-            unset IFS
-            
-            # Generate links for each run, mark latest
-            first=true
-            for run_id in "${sorted_runs[@]}"; do
-              timestamp=$(date -r "$branch_name/$run_id" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || echo "Unknown date")
-              if [ "$first" = true ]; then
-                echo "<li class='run'><a href='$branch_name/$run_id/'>Run #$run_id</a> ($timestamp) <span class='latest'>Latest</span></li>" >> index.html
-                first=false
-              else
-                echo "<li class='run'><a href='$branch_name/$run_id/'>Run #$run_id</a> ($timestamp)</li>" >> index.html
-              fi
-            done
-            
-            echo "</ul></li>" >> index.html
-          done
-          echo "</ul>" >> index.html
-          echo "</body></html>" >> index.html
-
-      # Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: gh-pages
-          clean: false # Don't remove existing files
-
-      # Create PR comment with test results and report link
-      - name: Create PR comment
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const outcome = '${{ needs.test.outputs.test_outcome }}';
-            const passed = parseInt('${{ needs.test.outputs.tests_passed }}' || '0');
-            const failed = parseInt('${{ needs.test.outputs.tests_failed }}' || '0');
-            const flaky = parseInt('${{ needs.test.outputs.tests_flaky }}' || '0');
-            const skipped = parseInt('${{ needs.test.outputs.tests_skipped }}' || '0');
-            const total = passed + failed + flaky + skipped;
-
-            const baseUrl = 'https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}';
-            const reportUrl = `${baseUrl}/${{ steps.branch-name.outputs.branch }}/${{ steps.branch-name.outputs.run_id }}/`;
-            const indexUrl = `${baseUrl}/`;
-
-            let statusIcon = outcome === 'success' ? '✅' : '❌';
-
-            let comment = `## Playwright Test Results ${statusIcon}\n\n`;
-            comment += `### Summary\n`;
-            comment += `- **Status**: ${outcome === 'success' ? 'Passed' : 'Failed'}\n`;
-            comment += `- **Total Tests**: ${total}\n`;
-            comment += `- **Passed**: ${passed}\n`;
-            comment += `- **Failed**: ${failed}\n`;
-            if (flaky > 0) comment += `- **Flaky**: ${flaky}\n`;
-            if (skipped > 0) comment += `- **Skipped**: ${skipped}\n`;
-
-            comment += `\n### Links\n`;
-            comment += `- [Test Report](${reportUrl}) (includes screenshots for failed tests)\n`;
-            comment += `- [All Reports](${indexUrl})\n`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ## Playwright Test Results
+            [View the report here](${{ steps.deploy-report.outputs.html_url }})
+            - Tests Passed: ${{ needs.test.outputs.tests_passed }}
+            - Tests Failed: ${{ needs.test.outputs.tests_failed }}
+            - Tests Flaky: ${{ needs.test.outputs.tests_flaky }}
+            - Tests Skipped: ${{ needs.test.outputs.tests_skipped }}
+            - Test Outcome: ${{ needs.test.outputs.test_outcome }}
+            - Report URL: [Playwright Report](${{ steps.deploy-report.outputs.html_url }})
