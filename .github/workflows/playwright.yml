@@ -89,59 +89,59 @@ jobs:
           path: playwright-report/
           retention-days: 30
   deploy:
-  needs: test
-  if: ${{ always() && needs.test.outputs.test_outcome != 'cancelled' }}
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - name: Download Playwright Report
-      uses: actions/download-artifact@v4
-      with:
-        name: playwright-report
-        path: playwright-report/
-    - name: Generate folder name
-      id: folder-name
-      run: |
-        # Get branch name or PR number
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          PREFIX="pr-${{ github.event.pull_request.number }}"
-        else
-          # Get branch name, replace slashes with dashes
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
-          PREFIX="${BRANCH_NAME}"
-        fi
+    needs: test
+    if: ${{ always() && needs.test.outputs.test_outcome != 'cancelled' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Playwright Report
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+      - name: Generate folder name
+        id: folder-name
+        run: |
+          # Get branch name or PR number
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PREFIX="pr-${{ github.event.pull_request.number }}"
+          else
+            # Get branch name, replace slashes with dashes
+            BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
+            PREFIX="${BRANCH_NAME}"
+          fi
 
-        # Generate timestamp in format YYYY-MM-DD-HHMMSS
-        TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
+          # Generate timestamp in format YYYY-MM-DD-HHMMSS
+          TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
 
-        # Create the folder name
-        FOLDER_NAME="reports/${PREFIX}/${TIMESTAMP}"
-        echo "name=${FOLDER_NAME}" >> $GITHUB_OUTPUT
+          # Create the folder name
+          FOLDER_NAME="reports/${PREFIX}/${TIMESTAMP}"
+          echo "name=${FOLDER_NAME}" >> $GITHUB_OUTPUT
 
-        # Create the folder structure
-        mkdir -p "${FOLDER_NAME}"
-        cp -r playwright-report/* "${FOLDER_NAME}/"
+          # Create the folder structure
+          mkdir -p "${FOLDER_NAME}"
+          cp -r playwright-report/* "${FOLDER_NAME}/"
 
-        # Create or update an index.html in the root directory
-        mkdir -p reports
-        echo "<html><head><title>Playwright Test Reports</title></head><body>" > reports/index.html
-        echo "<h1>Playwright Test Reports</h1>" >> reports/index.html
-        echo "<p>Last updated $(date '+%Y-%m-%d %H:%M:%S')</p>" >> reports/index.html
-        echo "<ul>" >> reports/index.html
+          # Create or update an index.html in the root directory
+          mkdir -p reports
+          echo "<html><head><title>Playwright Test Reports</title></head><body>" > reports/index.html
+          echo "<h1>Playwright Test Reports</h1>" >> reports/index.html
+          echo "<p>Last updated $(date '+%Y-%m-%d %H:%M:%S')</p>" >> reports/index.html
+          echo "<ul>" >> reports/index.html
 
-        # Find all directories and create links
-        find reports -mindepth 2 -type d | sort -r | while read dir; do
-          DIR_PATH="${dir#reports/}"
-          echo "<li><a href=\"${DIR_PATH}/index.html\">${DIR_PATH}</a></li>" >> reports/index.html
-        done
+          # Find all directories and create links
+          find reports -mindepth 2 -type d | sort -r | while read dir; do
+            DIR_PATH="${dir#reports/}"
+            echo "<li><a href=\"${DIR_PATH}/index.html\">${DIR_PATH}</a></li>" >> reports/index.html
+          done
 
-        echo "</ul></body></html>" >> reports/index.html
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: reports
-        branch: gh-pages
-        clean: false # Important: Don't remove old reports
+          echo "</ul></body></html>" >> reports/index.html
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: reports
+          branch: gh-pages
+          clean: false
   comment:
     needs: [test, deploy]
     if: ${{ always() && github.event_name == 'pull_request' }}
