@@ -47,29 +47,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-  deploy-report:
-    needs: test
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Upload Playwright Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./playwright-report
-          publish_branch: gh-pages
-          destination_dir: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-      - name: Comment on PR with Playwright Report URL
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: unsplash/comment-on-pr@v1.0.0
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            ## Playwright Test Results
-            [View the report here](${{ steps.deploy-report.outputs.html_url }})
-            - Tests Passed: ${{ needs.test.outputs.tests_passed }}
-            - Tests Failed: ${{ needs.test.outputs.tests_failed }}
-            - Tests Flaky: ${{ needs.test.outputs.tests_flaky }}
-            - Tests Skipped: ${{ needs.test.outputs.tests_skipped }}
-            - Test Outcome: ${{ needs.test.outputs.test_outcome }}
-            - Report URL: [Playwright Report](${{ steps.deploy-report.outputs.html_url }})
