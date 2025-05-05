@@ -124,16 +124,31 @@ jobs:
             const testsFlaky = '${{ needs.test.outputs.tests_flaky || 0 }}';
             const testsSkipped = '${{ needs.test.outputs.tests_skipped || 0 }}';
 
-            const commentBody = `## Playwright Test Results
+            const emogies = {
+              passed: '✅',
+              failed: '❌',
+              flaky: '⚠️',
+              skipped: '⏸️'
+            };
+            const testStatus = {
+              passed: testsPassed > 0 ? `${emogies.passed} ${testsPassed}` : 'No tests passed',
+              failed: testsFailed > 0 ? `${emogies.failed} ${testsFailed}` : 'No tests failed',
+              flaky: testsFlaky > 0 ? `${emogies.flaky} ${testsFlaky}` : 'No flaky tests',
+              skipped: testsSkipped > 0 ? `${emogies.skipped} ${testsSkipped}` : 'No tests skipped'
+            };
+
+            const commentBody = `## Playwright Test Results ${testsFailed > 0 ? '❌': '✅' }
 
             | Status | Count |
             | ------ | ----- |
-            | Passed | ${testsPassed} |
-            | Failed | ${testsFailed} |
-            | Flaky | ${testsFlaky} |
-            | Skipped | ${testsSkipped} |
+            | Passed | ${testStatus.passed} |
+            | Failed | ${testStatus.failed} |
+            | Flaky | ${testStatus.flaky} |
+            | Skipped | ${testStatus.skipped} |
 
             [View Full Test Report](${reportUrl})
+
+            Last updated ${Date.now()}
             `;
 
             // Find existing comment if any
