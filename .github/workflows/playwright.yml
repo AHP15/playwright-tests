@@ -5,7 +5,6 @@ on:
   pull_request:
     branches: [main, dev, stg, prod]
 
-# Adding permissions to allow comment creation
 permissions:
   contents: write
   pages: write
