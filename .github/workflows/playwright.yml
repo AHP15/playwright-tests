@@ -4,6 +4,15 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  deployments: read
+  pull-requests: write
+  contents: read
+  checks: write
+  statuses: write
+  issues: write
+  actions: write
 jobs:
   test-url:
     runs-on: ubuntu-latest
