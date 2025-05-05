@@ -58,7 +58,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwright-report
           publish_branch: gh-pages
-          publish_dir: ./playwright-report
           destination_dir: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
       - name: Comment on PR with Playwright Report URL
         if: ${{ github.event_name == 'pull_request' }}
