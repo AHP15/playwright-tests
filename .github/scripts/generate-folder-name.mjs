@@ -2,7 +2,10 @@ import { context } from '@actions/github';
 import { setOutput } from '@actions/core';
 
 const today = new Date();
-const currentDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+const currentDate = today.toISOString()
+  .replace('T', '-')
+  .replace(/:/g, '-')
+  .split('.')[0]; // YYYY-MM-DD-HH-MM-SS format
 console.log(`Current Date (UTC): ${currentDate}`);
   
 // Determine the prefix based on the event type

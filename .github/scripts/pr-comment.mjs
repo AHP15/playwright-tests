@@ -7,7 +7,7 @@ const { owner, repo, number } = github.context.issue
 
 try {
   const commentBody = `Hey`;
-  await github.rest.issues.createComment({
+  await github.getOctokit(GITHUB_TOKEN).rest.issues.createComment({
     owner,
     repo,
     issue_number: number,
