@@ -21,7 +21,7 @@ try {
     issue_number: number,
     body: commentBody,
     headers: {
-      authorization: `token ${GITHUB_TOKEN}`,
+      authorization: `token ${token}`,
     },
   });
   console.log('Comment created successfully');
