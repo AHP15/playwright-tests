@@ -1,42 +1,89 @@
-name: Playwright Tests
+name: Playwright Test
+
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+  pages: write
+  issues: write
 
 jobs:
-  wait-test-url:
+  wait-for-deployment-url:
     runs-on: ubuntu-latest
+    name: Wait for Vercel Deployment URL
     steps:
-      - name: Waiting for 200 from the Vercel Preview
+      - name: Wait for 200 status from vercel deployment
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitForPreview
+        id: wait-for-deployment-url
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 60
+          max_timeout: 120
     outputs:
-      deployment_url: ${{ steps.waitForPreview.outputs.url }}
+      deployment_url: ${{ steps.wait-for-deployment-url.outputs.deployment_url }}
+
   test:
-    needs: wait-test-url
-    env:
-      BASE_URL: ${{ needs.wait-test-url.outputs.deployment_url }}
-    timeout-minutes: 60
+    name: Run Tests
+    needs: wait-for-deployment-url
     runs-on: ubuntu-latest
+    outputs:
+      passed: ${{ steps.extract-test-results.outputs.passed }}
+      failed: ${{ steps.extract-test-results.outputs.failed }}
+      flaky: ${{ steps.extract-test-results.outputs.flaky }}
+      skipped: ${{ steps.extract-test-results.outputs.skipped }}
+    env:
+      BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: "lts/*"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright Browsers
+
+      - name: Intsall Playwright Browsers
         run: npx playwright install --with-deps
+
       - name: Run Playwright tests
+        continue-on-error: true
         run: npx playwright test
-      - uses: actions/upload-artifact@v4
+
+      - name: extract test results
+        id: extract-test-results
+        if: always()
+        run: node .github/scripts/parse-test-results.mjs
+      - name: Upload Playwright report artifact
         if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          path: playwright-report
+          retention-days: 1
+      - name: Generate Folder
+        id: generate-folder-name
+        run: node .github/scripts/generate-folder-name.mjs
+      - name: Deploy Test report to GH pages
+        if: ${{ !cancelled() }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: playwright-report
+          publish_branch: gh-pages
+          destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}
+          force_orphan: true
+          keep_files: true
+          commit_message: "Deploy Playwright test report"
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        run: node .github/scripts/pr-comment.mjs
