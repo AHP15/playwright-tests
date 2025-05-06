@@ -82,7 +82,7 @@ jobs:
           publish_branch: gh-pages
           destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}
           force_orphan: true
-          keep_files: false
+          keep_files: true
           commit_message: "Deploy Playwright test report"
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' }}
