@@ -77,9 +77,9 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ steps.generate-folder-name.outputs.folder_name }}
+          publish_dir: playwright-report
           publish_branch: gh-pages
-          destination_dir: test-results
+          destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}
           force_orphan: true
           keep_files: false
           commit_message: "Deploy Playwright test report"
