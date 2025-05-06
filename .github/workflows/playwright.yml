@@ -69,7 +69,7 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 1
-      - name: Generate Folder:
+      - name: Generate Folder
         id: generate-folder-name
         run: node .github/scripts/generate-folder-name.mjs
       - name: Deploy Test report to GH pages
