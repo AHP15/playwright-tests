@@ -1,9 +1,9 @@
-import { context } from '@actions/github';
+import github from '@actions/github';
 import process from 'process';
 
 const { GITHUB_TOKEN } = process.env;
 
-const { owner, repo, number } = context.issue;
+const { owner, repo, number } = github.context.issue
 
 try {
   const commentBody = `Hey`;
