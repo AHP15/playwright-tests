@@ -38,6 +38,7 @@ jobs:
       skipped: ${{ steps.extract-test-results.outputs.skipped }}
     env:
       BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
