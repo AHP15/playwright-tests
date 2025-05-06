@@ -1,13 +1,21 @@
-import github from '@actions/github';
+import { getOctokit, context } from '@actions/github';
+import * as core from '@actions/core';
 import process from 'process';
 
-const { GITHUB_TOKEN } = process.env;
-
-const { owner, repo, number } = github.context.issue
 
 try {
+
+  const token = process.env.GITHUB_TOKEN || core.getInput('github-token');
+  if (!token) {
+    throw new Error('No GitHub token provided.');
+  }
+
+  const octokit = getOctokit(token);
+  const { owner, repo, number } = context.issue
+
   const commentBody = `Hey`;
-  await github.getOctokit(GITHUB_TOKEN).rest.issues.createComment({
+
+  await octokit.rest.issues.createComment({
     owner,
     repo,
     issue_number: number,
