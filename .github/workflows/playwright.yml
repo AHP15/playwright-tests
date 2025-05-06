@@ -86,7 +86,7 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 7
   deploy:
     needs: test
     if: ${{ always() && needs.test.outputs.test_outcome != 'cancelled' }}
@@ -125,11 +125,11 @@ jobs:
           REPORT_URL="https://${REPO_OWNER}.github.io/${REPO_NAME}/${FOLDER_NAME}/index.html"
           echo "url=${REPORT_URL}" >> $GITHUB_OUTPUT
 
-          # Create the folder structure
-          mkdir -p "${FOLDER_NAME}"
-          cp -r playwright-report/* "${FOLDER_NAME}/"
+          # Create directory structure
+          mkdir -p "reports/${FOLDER_NAME}"
+          cp -r playwright-report/* "reports/${FOLDER_NAME}/"
 
-          # Create or update an index.html in the root directory
+          # Create or update the index.html in the root directory
           mkdir -p reports
           echo "<html><head><title>Playwright Test Reports</title></head><body>" > reports/index.html
           echo "<h1>Playwright Test Reports</h1>" >> reports/index.html
@@ -146,7 +146,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: playwright-report
+          folder: reports
           branch: gh-pages
           clean: false
   comment:
@@ -184,17 +184,17 @@ jobs:
 
             const commentBody = `## Playwright Test Results ${testsFailed > 0 ? ' ❌': ' ✅' }
 
-            | Status | Count |
-            | ------ | ----- |
-            | Passed | ${testStatus.passed} |
-            | Failed | ${testStatus.failed} |
-            | Flaky | ${testStatus.flaky} |
-            | Skipped | ${testStatus.skipped} |
+| Status | Count |
+| ------ | ----- |
+| Passed | ${testStatus.passed} |
+| Failed | ${testStatus.failed} |
+| Flaky | ${testStatus.flaky} |
+| Skipped | ${testStatus.skipped} |
 
-            [View Full Test Report](${reportUrl})
+[View Full Test Report](${reportUrl})
 
-            Last updated ${new Date().toLocaleString()}
-            `;
+Last updated ${new Date().toLocaleString()}`;
+
 
             // Find existing comment if any
             const issue_number = context.issue.number;
