@@ -1,312 +1,89 @@
-name: Playwright Tests
+name: Playwright Test
 
 on:
   push:
-    branches: [main, dev, stg, prod]
+    branches: [main]
   pull_request:
-    branches: [main, dev, stg, prod]
+    branches: [main]
 
-# Permissions needed for:
-# - contents: write (checkout, potentially deploy action)
-# - pages: write (deploy to gh-pages)
-# - id-token: write (required by gh-pages deploy action for OIDC)
-# - issues: write (write comments on PRs)
-# - pull-requests: write (write comments on PRs)
 permissions:
-  contents: write
-  pages: write
+  contents: read
   id-token: write
-  issues: write
   pull-requests: write
+  pages: write
+  issues: write
 
 jobs:
-  wait-test-url:
-    name: Wait for Vercel Preview URL
+  wait-for-deployment-url:
     runs-on: ubuntu-latest
+    name: Wait for Vercel Deployment URL
     steps:
-      - name: Waiting for 200 from the Vercel Preview
+      - name: Wait for 200 status from vercel deployment
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitForPreview
+        id: wait-for-deployment-url
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 300 # Increased timeout to 5 minutes
-
+          max_timeout: 120
     outputs:
-      deployment_url: ${{ steps.waitForPreview.outputs.url }}
+      deployment_url: ${{ steps.wait-for-deployment-url.outputs.deployment_url }}
 
   test:
-    name: Run Playwright Tests
-    needs: wait-test-url
-    # Only run if a deployment URL was successfully obtained
-    if: ${{ needs.wait-test-url.outputs.deployment_url != '' }}
-    env:
-      # Set the BASE_URL environment variable for Playwright tests
-      BASE_URL: ${{ needs.wait-test-url.outputs.deployment_url }}
-    timeout-minutes: 60
+    name: Run Tests
+    needs: wait-for-deployment-url
     runs-on: ubuntu-latest
     outputs:
-      test_outcome: ${{ steps.test-outcome.outputs.outcome }}
-      tests_passed: ${{ steps.collect-test-results.outputs.passed }}
-      tests_failed: ${{ steps.collect-test-results.outputs.failed }}
-      tests_flaky: ${{ steps.collect-test-results.outputs.flaky }}
-      tests_skipped: ${{ steps.collect-test-results.outputs.skipped }}
+      passed: ${{ steps.extract-test-results.outputs.passed }}
+      failed: ${{ steps.extract-test-results.outputs.failed }}
+      flaky: ${{ steps.extract-test-results.outputs.flaky }}
+      skipped: ${{ steps.extract-test-results.outputs.skipped }}
+    env:
+      BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
     steps:
-      - name: Check out repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
-          cache: "npm" # Enable npm caching
+          node-version: "lts/*"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
+      - name: Intsall Playwright Browsers
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        # Continue even if tests fail, so we can report results
         continue-on-error: true
         run: npx playwright test
 
-      - name: Collect test results
-        id: collect-test-results
-        # Always run this step to collect results, even if tests failed
+      - name: extract test results
+        id: extract-test-results
         if: always()
-        run: |
-          # Path to the Playwright JSON report
-          REPORT_FILE="playwright-report/results.json" # Adjusted to common default name, verify yours
-
-          # Default values
-          PASSED=0
-          FAILED=0
-          FLAKY=0
-          SKIPPED=0
-
-          if [ -f "$REPORT_FILE" ]; then
-            echo "Parsing test results from $REPORT_FILE..."
-            # Try parsing with jq (preferred)
-            if command -v jq >/dev/null 2>&1; then
-              # Note: Adjust jq paths if your results.json structure differs
-              # Common structure might be under '.suites[0].specs' or similar aggregate
-              # This example assumes stats are at the top level - verify your JSON output
-              PASSED=$(jq '.stats.expected // 0' "$REPORT_FILE")
-              FAILED=$(jq '.stats.unexpected // 0' "$REPORT_FILE")
-              FLAKY=$(jq '.stats.flaky // 0' "$REPORT_FILE")
-              SKIPPED=$(jq '.stats.skipped // 0' "$REPORT_FILE")
-              echo "jq found: Passed=$PASSED, Failed=$FAILED, Flaky=$FLAKY, Skipped=$SKIPPED"
-            else
-              # Fallback to grep/cut if jq is not available
-              echo "jq not found, using grep fallback..."
-              PASSED=$(grep -o '"expected":[0-9]\+' "$REPORT_FILE" | head -n 1 | cut -d':' -f2 || echo 0)
-              FAILED=$(grep -o '"unexpected":[0-9]\+' "$REPORT_FILE" | head -n 1 | cut -d':' -f2 || echo 0)
-              FLAKY=$(grep -o '"flaky":[0-9]\+' "$REPORT_FILE" | head -n 1 | cut -d':' -f2 || echo 0)
-              SKIPPED=$(grep -o '"skipped":[0-9]\+' "$REPORT_FILE" | head -n 1 | cut -d':' -f2 || echo 0)
-              echo "grep fallback: Passed=$PASSED, Failed=$FAILED, Flaky=$FLAKY, Skipped=$SKIPPED"
-            fi
-          else
-            echo "Test result file $REPORT_FILE not found."
-            # Set FAILED to 1 if file is missing, indicating a problem
-            FAILED=1
-          fi
-
-          # Set outputs for later steps
-          echo "passed=$PASSED" >> $GITHUB_OUTPUT
-          echo "failed=$FAILED" >> $GITHUB_OUTPUT
-          echo "flaky=$FLAKY" >> $GITHUB_OUTPUT
-          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-
-      - name: Set test job outcome
-        id: test-outcome
-        if: always()
-        run: echo "outcome=${{ job.status }}" >> $GITHUB_OUTPUT # Captures success/failure/cancelled
-
+        run: node .github/scripts/parse-test-results.mjs
       - name: Upload Playwright report artifact
-        # Don't upload if the job was cancelled
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
-          retention-days: 7 # Keep reports for 7 days
-
-  deploy-report:
-    name: Deploy Report to GitHub Pages
-    # Run after the test job, but not if the test job was cancelled
-    needs: test
-    if: ${{ always() && needs.test.outputs.test_outcome != 'cancelled' }}
-    runs-on: ubuntu-latest
-    outputs:
-      report_url: ${{ steps.generate-report-path.outputs.url }}
-    steps:
-      - name: Check out repository (needed for deploy action context)
-        uses: actions/checkout@v4
-
-      - name: Download Playwright report artifact
-        uses: actions/download-artifact@v4
+          path: playwright-report
+          retention-days: 1
+      - name: Generate Folder:
+        id: generate-folder-name
+        run: node .github/scripts/generate-folder-name.mjs
+      - name: Deploy Test report to GH pages
+        if: ${{ !cancelled() }}
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: playwright-report
-          # Download into a specific directory to avoid conflicts
-          path: playwright-report-downloaded/
-
-      - name: Generate report path and URL
-        id: generate-report-path
-        run: |
-          # Generate a unique path based on trigger type and timestamp
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            PREFIX="pr-${{ github.event.pull_request.number }}"
-          else
-            # Sanitize branch name (replace / with -)
-            BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | sed 's/\//-/g')
-            PREFIX="${BRANCH_NAME}"
-          fi
-          TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S') # Use GitHub-friendly timestamp format
-          FOLDER_NAME="${PREFIX}/${TIMESTAMP}"
-
-          # Set outputs for use in this job and subsequent jobs
-          echo "folder_name=${FOLDER_NAME}" >> $GITHUB_OUTPUT
-
-          # Construct the GitHub Pages URL
-          REPO_OWNER="${{ github.repository_owner }}"
-          # Extract repo name correctly
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          # Ensure index.html is part of the URL
-          REPORT_URL="https://${REPO_OWNER}.github.io/${REPO_NAME}/${FOLDER_NAME}/index.html"
-          echo "url=${REPORT_URL}" >> $GITHUB_OUTPUT
-
-          echo "Report will be deployed to folder: ${FOLDER_NAME}"
-          echo "Report URL: ${REPORT_URL}"
-
-      - name: Prepare report files for deployment
-        run: |
-          # Create the target directory structure within 'reports'
-          mkdir -p "reports/${{ steps.generate-report-path.outputs.folder_name }}"
-
-          # Copy the downloaded report contents into the target directory
-          # Use dot (.) to copy contents, not the directory itself
-          cp -r playwright-report-downloaded/. "reports/${{ steps.generate-report-path.outputs.folder_name }}/"
-
-          # --- Create/Update the main index file for Browse reports ---
-          # Ensure base reports directory exists
-          mkdir -p reports
-
-          # Start the index file
-          INDEX_FILE="reports/index.html"
-          echo "<!DOCTYPE html><html><head><title>Playwright Test Reports</title>" > "$INDEX_FILE"
-          echo "<style>body { font-family: sans-serif; } ul { list-style: none; padding: 0; } li { margin: 5px 0; } a { text-decoration: none; color: #0366d6; } a:hover { text-decoration: underline; }</style>" >> "$INDEX_FILE"
-          echo "</head><body>" >> "$INDEX_FILE"
-          echo "<h1>Playwright Test Reports</h1>" >> "$INDEX_FILE"
-          echo "<p><i>Last updated: $(date '+%Y-%m-%d %H:%M:%S UTC')</i></p>" >> "$INDEX_FILE"
-          echo "<ul>" >> "$INDEX_FILE"
-
-          # Find all report index.html files, sort them, generate links
-          # Use find to get directories (mindepth 2 to skip root 'reports'), sort reverse, create links
-          find reports -mindepth 2 -maxdepth 2 -type d | sort -r | while read -r dir; do
-            # Extract the relative path (e.g., pr-123/2024-05-06-103000)
-            DIR_PATH="${dir#reports/}"
-            # Link to the index.html within that report directory
-            echo "  <li><a href=\"${DIR_PATH}/index.html\">${DIR_PATH}</a></li>" >> "$INDEX_FILE"
-          done
-
-          # Close HTML tags
-          echo "</ul></body></html>" >> "$INDEX_FILE"
-          echo "Generated index file at ${INDEX_FILE}"
-
-      - name: Deploy report to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          # Deploy the 'reports' directory (contains structured reports and index.html)
-          folder: reports
-          # Target branch for GitHub Pages
-          branch: gh-pages
-          # Don't clean the branch, preserve history and other files
-          clean: false
-
-  comment-on-pr:
-    name: Comment Test Results on PR
-    # Run after test and deploy jobs complete successfully or with test failures
-    needs: [test, deploy-report]
-    # Run only on pull request events, and not if the workflow was cancelled
-    if: ${{ always() && github.event_name == 'pull_request' && needs.test.outputs.test_outcome != 'cancelled' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create or Update PR Comment
-        uses: actions/github-script@v7 # Use latest version
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const issue_number = context.issue.number;
-            const reportUrl = '${{ needs.deploy-report.outputs.report_url }}'; // Get URL from deploy job
-            const testOutcome = '${{ needs.test.outputs.test_outcome }}'; // success, failure
-
-            // Test summary from outputs (provide defaults)
-            const testsPassed = parseInt('${{ needs.test.outputs.tests_passed || 0 }}');
-            const testsFailed = parseInt('${{ needs.test.outputs.tests_failed || 0 }}');
-            const testsFlaky = parseInt('${{ needs.test.outputs.tests_flaky || 0 }}');
-            const testsSkipped = parseInt('${{ needs.test.outputs.tests_skipped || 0 }}');
-
-            const commentMarker = ``; // Hidden marker for finding the comment
-
-            const emojis = {
-              passed: '✅',
-              failed: '❌',
-              flaky: '⚠️', // Or '❓'
-              skipped: '⏸️', // Or '➖'
-              success: '✅',
-              failure: '❌'
-            };
-
-            // Determine overall status based on failures and job outcome
-            const overallStatusEmoji = (testsFailed > 0 || testOutcome === 'failure') ? emojis.failed : emojis.success;
-
-            // Build the comment body using Markdown
-            const commentBody = `
-            ${commentMarker}
-            ## ${overallStatusEmoji} Playwright Test Results
-
-            | Status    | Count |
-            | :-------- | ----: |
-            | Passed    | ${emojis.passed} ${testsPassed} |
-            | Failed    | ${testsFailed > 0 ? emojis.failed : emojis.passed} ${testsFailed} |
-            | Flaky     | ${emojis.flaky} ${testsFlaky} |
-            | Skipped   | ${emojis.skipped} ${testsSkipped} |
-
-            [View Full Test Report](${reportUrl})
-
-            *Workflow run: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*
-            *Last updated: ${new Date().toUTCString()}*
-            `;
-
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number,
-            });
-
-            const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes(commentMarker);
-            });
-
-            // Update or create comment
-            if (botComment) {
-              console.log(`Updating existing comment #${botComment.id}`);
-              await github.rest.issues.updateComment({
-                owner,
-                repo,
-                comment_id: botComment.id,
-                body: commentBody.trim(), // Use trim() to remove leading/trailing whitespace
-              });
-            } else {
-              console.log(`Creating new comment`);
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number,
-                body: commentBody.trim(), // Use trim()
-              });
-            }
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: generate-folder-name.outputs.folder_name
+          publish_branch: gh-pages
+          destination_dir: test-results
+          force_orphan: true
+          keep_files: false
+          commit_message: "Deploy Playwright test report"
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        run: node .github/scripts/pr-comment.mjs
