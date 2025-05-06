@@ -1,0 +1,198 @@
+{
+  "config": {
+    "configFile": "/home/runner/work/playwright-tests/playwright-tests/playwright.config.ts",
+    "rootDir": "/home/runner/work/playwright-tests/playwright-tests/tests",
+    "forbidOnly": true,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/AHP15/playwright-tests/commit/8bde6522a6b723276d87e86e4e59e2820376b073",
+        "commitHash": "8bde6522a6b723276d87e86e4e59e2820376b073",
+        "prHref": "https://github.com/AHP15/playwright-tests/pull/5",
+        "prTitle": "Fix config",
+        "prBaseHash": "001bbea83b112ec04dbf267a66f8002607cfd1b4",
+        "buildHref": "https://github.com/AHP15/playwright-tests/actions/runs/14864764527"
+      },
+      "gitCommit": {
+        "shortHash": "8bde652",
+        "hash": "8bde6522a6b723276d87e86e4e59e2820376b073",
+        "subject": "Merge d7c77e8549a0ab921c7ec8993e56b0638247c0ce into 001bbea83b112ec04dbf267a66f8002607cfd1b4",
+        "body": "Merge d7c77e8549a0ab921c7ec8993e56b0638247c0ce into 001bbea83b112ec04dbf267a66f8002607cfd1b4\n",
+        "author": {
+          "name": "Abdessittir Harkati",
+          "email": "harkati.web.dev@gmail.com",
+          "time": 1746548698000
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "time": 1746548698000
+        },
+        "branch": "HEAD"
+      },
+      "gitDiff": "diff --git a/.github/workflows/playwright.yml b/.github/workflows/playwright.yml\nindex b9c1ab4..fcb16a5 100644\n--- a/.github/workflows/playwright.yml\n+++ b/.github/workflows/playwright.yml\n@@ -81,7 +81,7 @@ jobs:\n           publish_dir: playwright-report\n           publish_branch: gh-pages\n           destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}\n-          force_orphan: true\n+          force_orphan: false\n           keep_files: true\n           commit_message: \"Deploy Playwright test report\"\n       - name: Comment on PR",
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/runner/work/playwright-tests/playwright-tests/test-results",
+        "repeatEach": 1,
+        "retries": 2,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/AHP15/playwright-tests/commit/8bde6522a6b723276d87e86e4e59e2820376b073",
+            "commitHash": "8bde6522a6b723276d87e86e4e59e2820376b073",
+            "prHref": "https://github.com/AHP15/playwright-tests/pull/5",
+            "prTitle": "Fix config",
+            "prBaseHash": "001bbea83b112ec04dbf267a66f8002607cfd1b4",
+            "buildHref": "https://github.com/AHP15/playwright-tests/actions/runs/14864764527"
+          },
+          "gitCommit": {
+            "shortHash": "8bde652",
+            "hash": "8bde6522a6b723276d87e86e4e59e2820376b073",
+            "subject": "Merge d7c77e8549a0ab921c7ec8993e56b0638247c0ce into 001bbea83b112ec04dbf267a66f8002607cfd1b4",
+            "body": "Merge d7c77e8549a0ab921c7ec8993e56b0638247c0ce into 001bbea83b112ec04dbf267a66f8002607cfd1b4\n",
+            "author": {
+              "name": "Abdessittir Harkati",
+              "email": "harkati.web.dev@gmail.com",
+              "time": 1746548698000
+            },
+            "committer": {
+              "name": "GitHub",
+              "email": "noreply@github.com",
+              "time": 1746548698000
+            },
+            "branch": "HEAD"
+          },
+          "gitDiff": "diff --git a/.github/workflows/playwright.yml b/.github/workflows/playwright.yml\nindex b9c1ab4..fcb16a5 100644\n--- a/.github/workflows/playwright.yml\n+++ b/.github/workflows/playwright.yml\n@@ -81,7 +81,7 @@ jobs:\n           publish_dir: playwright-report\n           publish_branch: gh-pages\n           destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}\n-          force_orphan: true\n+          force_orphan: false\n           keep_files: true\n           commit_message: \"Deploy Playwright test report\"\n       - name: Comment on PR",
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/runner/work/playwright-tests/playwright-tests/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.52.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "example.spec.ts",
+      "file": "example.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "has title",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 473,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-06T16:26:07.183Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a30a6eba6312f6b87ea5-b06063a3e613764d08f8",
+          "file": "example.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "get started link",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 742,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-06T16:26:09.371Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a30a6eba6312f6b87ea5-274e97907a6e3638a22f",
+          "file": "example.spec.ts",
+          "line": 10,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-05-06T16:26:06.239Z",
+    "duration": 3994.227,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
