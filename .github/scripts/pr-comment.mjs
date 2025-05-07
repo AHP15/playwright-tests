@@ -15,9 +15,9 @@ try {
 
   const { TOTAL, PASSED, FAILED, FLAKY, SKIPPED, BASE_URL, REPORT_FOLDER } = process.env;
 
-  const commentTitle = `# Plyawright Test Results ${FAILED > 0 ? '❌' : '✅'}`;
+  const commentTitle = `# Playwright Test Results ${FAILED > 0 ? '❌' : '✅'}`;
   const commentBody = `
-    ${commentTitle}
+  ${commentTitle}
   ## Summary
   - **Total**: ${TOTAL}
   - **Passed**: ${PASSED}
@@ -25,7 +25,7 @@ try {
   - **Flaky**: ${FLAKY}
   - **Skipped**: ${SKIPPED}
   ## Details
-    [Report Link](${BASE_URL}/${REPORT_FOLDER})
+  [Report Link](${BASE_URL}/${REPORT_FOLDER})
   `;
 
   await octokit.rest.issues.createComment({
