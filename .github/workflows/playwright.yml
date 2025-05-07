@@ -94,3 +94,13 @@ jobs:
           FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
           SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
         run: node .github/scripts/pr-comment.mjs
+      - name: Update index.html
+        if: ${{ !cancelled() }}
+        env:
+          REPORT_FOLDER: ${{ steps.generate-folder-name.outputs.folder_name }}
+          TOTAL: ${{ steps.extract-test-results.outputs.total }}
+          PASSED: ${{ steps.extract-test-results.outputs.passed }}
+          FAILED: ${{ steps.extract-test-results.outputs.failed }}
+          FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
+          SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
+        run: node .github/scripts/update-index-html.mjs
