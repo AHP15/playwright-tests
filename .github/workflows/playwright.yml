@@ -20,12 +20,12 @@ jobs:
     steps:
       - name: Wait for 200 status from vercel deployment
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: wait-for-deployment-url
+        id: wait-for-deployment
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 120
     outputs:
-      deployment_url: ${{ steps.wait-for-deployment-url.outputs.deployment_url }}
+      deployment_url: ${{ steps.wait-for-deployment.outputs.deployment_url }}
 
   test:
     name: Run Tests

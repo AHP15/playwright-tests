@@ -69,7 +69,7 @@ try {
     core.info('Existing index.html found, updating with new entry');
   } catch(err) {
     if(err.status === 404) {
-      indexContent = intialeIndexContent(indexContent);
+      indexContent = intialeIndexContent(newEntry);
       core.info('No existing index.html found, creating a new one');
     } else {
       core.error('Error fetching index.html:', err);
