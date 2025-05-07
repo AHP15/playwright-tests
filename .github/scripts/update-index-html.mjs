@@ -1,7 +1,8 @@
 import * as core from '@actions/core';
 import { getOctokit, context } from '@actions/github';
 
-const intialeIndexContent = (newEntry) => `
+function intialeIndexContent (newEntry) { 
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +23,8 @@ const intialeIndexContent = (newEntry) => `
   </ul>
 </body>
 </html>
-`;
+`
+};
 
 try {
   const token = process.env.GITHUB_TOKEN || core.getInput('github-token');
