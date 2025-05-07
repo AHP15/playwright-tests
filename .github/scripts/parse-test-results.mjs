@@ -7,6 +7,7 @@ const workspaceDir = process.env.GITHUB_WORKSPACE || '.';
 // The path to the Playwright test results file is configured in the Playwright config file.
 const reportFilePath = join(workspaceDir, 'playwright-report', 'results.json');
 
+let total = 0;
 let passed = 0;
 let failed = 0;
 let flaky = 0;
