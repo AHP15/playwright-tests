@@ -87,6 +87,7 @@ jobs:
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
+          BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
           REPORT_FOLDER: ${{ steps.generate-folder-name.outputs.folder_name }}
           TOTAL: ${{ steps.extract-test-results.outputs.total }}
           PASSED: ${{ steps.extract-test-results.outputs.passed }}

@@ -28,16 +28,38 @@ try {
   [Report Link](${BASE_URL}/${REPORT_FOLDER})
   `;
 
-  await octokit.rest.issues.createComment({
+   // Get all comments for this PR/issue
+   const { data: comments } = await octokit.rest.issues.listComments({
     owner,
     repo,
     issue_number: number,
-    body: commentBody,
-    headers: {
-      authorization: `token ${token}`,
-    },
   });
-  console.log('Comment created successfully');
+
+  // Look for an existing comment that starts with the same title
+  const existingComment = comments.find(comment => 
+    comment.body.trim().startsWith(commentTitle.trim())
+  )
+
+  if(existingComment) {
+    await octokit.rest.issues.updateComment({
+      owner,
+      repo,
+      comment_id: existingComment.id,
+      body: commentBody,
+    });
+    console.log('Comment updated successfully');
+  } else {
+    await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: number,
+      body: commentBody,
+      headers: {
+        authorization: `token ${token}`,
+      },
+    });
+    console.log('Comment created successfully');
+  }
 } catch (error) {
   console.error('Error creating comment:', error);
 }
