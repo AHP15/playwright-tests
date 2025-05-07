@@ -13,18 +13,57 @@ try {
   const octokit = getOctokit(token);
   const { owner, repo, number } = context.issue
 
-  const commentBody = `Hey`;
+  const { TOTAL, PASSED, FAILED, FLAKY, SKIPPED, REPORT_FOLDER } = process.env;
 
-  await octokit.rest.issues.createComment({
+  const commentTitle = `# Playwright Test Results ${FAILED > 0 ? '❌' : '✅'}`;
+  const commentBody = `
+  ${commentTitle}
+  ## Summary
+  - **Total**: ${TOTAL}
+  - **Passed**: ${PASSED}
+  - **Failed**: ${FAILED}
+  - **Flaky**: ${FLAKY}
+  - **Skipped**: ${SKIPPED}
+  ## Details
+  [Report Link](${`https://${owner}.github.io/${repo}/${REPORT_FOLDER}`})
+
+  [ALL Reports Link](${`https://${owner}.github.io/${repo}`})
+  ## Additional Information
+  Last updated: ${new Date().toUTCString()}
+  `;
+
+   // Get all comments for this PR/issue
+   const { data: comments } = await octokit.rest.issues.listComments({
     owner,
     repo,
     issue_number: number,
-    body: commentBody,
-    headers: {
-      authorization: `token ${token}`,
-    },
   });
-  console.log('Comment created successfully');
+
+  // Look for an existing comment that starts with the same title
+  const existingComment = comments.find(comment => 
+    comment.body.trim().startsWith(commentTitle.trim())
+  )
+
+  if(existingComment) {
+    await octokit.rest.issues.updateComment({
+      owner,
+      repo,
+      comment_id: existingComment.id,
+      body: commentBody,
+    });
+    console.log('Comment updated successfully');
+  } else {
+    await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: number,
+      body: commentBody,
+      headers: {
+        authorization: `token ${token}`,
+      },
+    });
+    console.log('Comment created successfully');
+  }
 } catch (error) {
   console.error('Error creating comment:', error);
 }

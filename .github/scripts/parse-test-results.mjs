@@ -7,6 +7,7 @@ const workspaceDir = process.env.GITHUB_WORKSPACE || '.';
 // The path to the Playwright test results file is configured in the Playwright config file.
 const reportFilePath = join(workspaceDir, 'playwright-report', 'results.json');
 
+let total = 0;
 let passed = 0;
 let failed = 0;
 let flaky = 0;
@@ -22,10 +23,12 @@ try {
   const { stats } = report;
   if (!stats) throw new Error('No suites found in test results');
 
-  passed = stats.expected ?? 0;
   failed = stats.unexpected ?? 0;
   flaky = stats.flaky ?? 0;
   skipped = stats.skipped ?? 0;
+  total = failed + flaky + skipped;
+  total += stats.expected ?? 0;
+  passed = total - failed - flaky;
 
   info(`Parsing successful: Passed=${passed}, Failed=${failed}, Flaky=${flaky}, Skipped=${skipped}`);
 
@@ -34,6 +37,7 @@ try {
   setFailed(`Script failed: ${err.message}`);
 }
 
+setOutput('total', total);
 setOutput('passed', passed);
 setOutput('failed', failed);
 setOutput('flaky', flaky);
