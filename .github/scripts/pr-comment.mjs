@@ -13,7 +13,7 @@ try {
   const octokit = getOctokit(token);
   const { owner, repo, number } = context.issue
 
-  const { TOTAL, PASSED, FAILED, FLAKY, SKIPPED, BASE_URL, REPORT_FOLDER } = process.env;
+  const { TOTAL, PASSED, FAILED, FLAKY, SKIPPED, REPORT_FOLDER } = process.env;
 
   const commentTitle = `# Playwright Test Results ${FAILED > 0 ? '❌' : '✅'}`;
   const commentBody = `
@@ -25,7 +25,8 @@ try {
   - **Flaky**: ${FLAKY}
   - **Skipped**: ${SKIPPED}
   ## Details
-  [Report Link](${BASE_URL}/${REPORT_FOLDER})
+  [Report Link](${`https://${owner}.github.io/${repo}/${REPORT_FOLDER}`})
+  Last updated: ${new Date().toUTCString()}
   `;
 
    // Get all comments for this PR/issue
