@@ -1,0 +1,701 @@
+{
+  "config": {
+    "configFile": "/home/runner/work/playwright-tests/playwright-tests/playwright.config.ts",
+    "rootDir": "/home/runner/work/playwright-tests/playwright-tests/tests",
+    "forbidOnly": true,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "ci": {
+        "commitHref": "https://github.com/AHP15/playwright-tests/commit/d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+        "commitHash": "d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+        "prHref": "https://github.com/AHP15/playwright-tests/pull/7",
+        "prTitle": "Add app tests",
+        "prBaseHash": "b7e56104cd9591d1ebb3b47c8bbbab6536e84313",
+        "buildHref": "https://github.com/AHP15/playwright-tests/actions/runs/14881544110"
+      },
+      "gitCommit": {
+        "shortHash": "d0f4284",
+        "hash": "d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+        "subject": "Merge 9e178f490948e89bdbaeff9170cde8ccc3da3ac1 into b7e56104cd9591d1ebb3b47c8bbbab6536e84313",
+        "body": "Merge 9e178f490948e89bdbaeff9170cde8ccc3da3ac1 into b7e56104cd9591d1ebb3b47c8bbbab6536e84313\n",
+        "author": {
+          "name": "Abdessittir Harkati",
+          "email": "harkati.web.dev@gmail.com",
+          "time": 1746615086000
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "time": 1746615086000
+        },
+        "branch": "HEAD"
+      },
+      "gitDiff": "diff --git a/tests/app.spec.ts b/tests/app.spec.ts\nnew file mode 100644\nindex 0000000..92dda29\n--- /dev/null\n+++ b/tests/app.spec.ts\n@@ -0,0 +1,15 @@\n+import { test, expect } from '@playwright/test';\n+\n+test('has title', async ({ page }) => {\n+  await page.goto('/');\n+\n+  // Expect a title \"to contain\" a substring.\n+  await expect(page).toHaveTitle(/Vite + React Hello/);\n+});\n+\n+test('should fails', async ({ page }) => {\n+  await page.goto('/');\n+\n+  // Expect a title \"to contain\" a substring.\n+  await expect(page).toHaveTitle(/ok/);\n+});",
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/runner/work/playwright-tests/playwright-tests/test-results",
+        "repeatEach": 1,
+        "retries": 2,
+        "metadata": {
+          "ci": {
+            "commitHref": "https://github.com/AHP15/playwright-tests/commit/d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+            "commitHash": "d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+            "prHref": "https://github.com/AHP15/playwright-tests/pull/7",
+            "prTitle": "Add app tests",
+            "prBaseHash": "b7e56104cd9591d1ebb3b47c8bbbab6536e84313",
+            "buildHref": "https://github.com/AHP15/playwright-tests/actions/runs/14881544110"
+          },
+          "gitCommit": {
+            "shortHash": "d0f4284",
+            "hash": "d0f4284d27da2d5e5fcb9c5cde0bd9feb213a4fb",
+            "subject": "Merge 9e178f490948e89bdbaeff9170cde8ccc3da3ac1 into b7e56104cd9591d1ebb3b47c8bbbab6536e84313",
+            "body": "Merge 9e178f490948e89bdbaeff9170cde8ccc3da3ac1 into b7e56104cd9591d1ebb3b47c8bbbab6536e84313\n",
+            "author": {
+              "name": "Abdessittir Harkati",
+              "email": "harkati.web.dev@gmail.com",
+              "time": 1746615086000
+            },
+            "committer": {
+              "name": "GitHub",
+              "email": "noreply@github.com",
+              "time": 1746615086000
+            },
+            "branch": "HEAD"
+          },
+          "gitDiff": "diff --git a/tests/app.spec.ts b/tests/app.spec.ts\nnew file mode 100644\nindex 0000000..92dda29\n--- /dev/null\n+++ b/tests/app.spec.ts\n@@ -0,0 +1,15 @@\n+import { test, expect } from '@playwright/test';\n+\n+test('has title', async ({ page }) => {\n+  await page.goto('/');\n+\n+  // Expect a title \"to contain\" a substring.\n+  await expect(page).toHaveTitle(/Vite + React Hello/);\n+});\n+\n+test('should fails', async ({ page }) => {\n+  await page.goto('/');\n+\n+  // Expect a title \"to contain\" a substring.\n+  await expect(page).toHaveTitle(/ok/);\n+});",
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/runner/work/playwright-tests/playwright-tests/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.52.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "app.spec.ts",
+      "file": "app.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "has title",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 193,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 4
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test(\u001b[32m'has title'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 7 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/Vite + React Hello/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 4
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n  2 |\n  3 | test('has title', async ({ page }) => {\n> 4 |   await page.goto('/');\n    |              ^\n  5 |\n  6 |   // Expect a title \"to contain\" a substring.\n  7 |   await expect(page).toHaveTitle(/Vite + React Hello/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-07T10:52:39.065Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 4
+                  }
+                },
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 223,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 4
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test(\u001b[32m'has title'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 7 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/Vite + React Hello/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 4
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n  2 |\n  3 | test('has title', async ({ page }) => {\n> 4 |   await page.goto('/');\n    |              ^\n  5 |\n  6 |   // Expect a title \"to contain\" a substring.\n  7 |   await expect(page).toHaveTitle(/Vite + React Hello/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-05-07T10:52:40.188Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 4
+                  }
+                },
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 168,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 4
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 2 |\u001b[39m\n \u001b[90m 3 |\u001b[39m test(\u001b[32m'has title'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m   |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m\n \u001b[90m 6 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 7 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/Vite + React Hello/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 4
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n  2 |\n  3 | test('has title', async ({ page }) => {\n> 4 |   await page.goto('/');\n    |              ^\n  5 |\n  6 |   // Expect a title \"to contain\" a substring.\n  7 |   await expect(page).toHaveTitle(/Vite + React Hello/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:4:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 2,
+                  "startTime": "2025-05-07T10:52:41.213Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium-retry2/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-has-title-chromium-retry2/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 4
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-e5a9e2d74bff75c9508e",
+          "file": "app.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "should fails",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 167,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 11
+                    },
+                    "snippet": "\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m test(\u001b[32m'should fails'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 14 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/ok/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 11
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n   9 |\n  10 | test('should fails', async ({ page }) => {\n> 11 |   await page.goto('/');\n     |              ^\n  12 |\n  13 |   // Expect a title \"to contain\" a substring.\n  14 |   await expect(page).toHaveTitle(/ok/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-07T10:52:42.243Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 11
+                  }
+                },
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 218,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 11
+                    },
+                    "snippet": "\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m test(\u001b[32m'should fails'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 14 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/ok/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 11
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n   9 |\n  10 | test('should fails', async ({ page }) => {\n> 11 |   await page.goto('/');\n     |              ^\n  12 |\n  13 |   // Expect a title \"to contain\" a substring.\n  14 |   await expect(page).toHaveTitle(/ok/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-05-07T10:52:43.208Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 11
+                  }
+                },
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 176,
+                  "error": {
+                    "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n",
+                    "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                      "column": 14,
+                      "line": 11
+                    },
+                    "snippet": "\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m test(\u001b[32m'should fails'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m   \u001b[90m// Expect a title \"to contain\" a substring.\u001b[39m\n \u001b[90m 14 |\u001b[39m   \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveTitle(\u001b[35m/ok/\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                        "column": 14,
+                        "line": 11
+                      },
+                      "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n\n   9 |\n  10 | test('should fails', async ({ page }) => {\n> 11 |   await page.goto('/');\n     |              ^\n  12 |\n  13 |   // Expect a title \"to contain\" a substring.\n  14 |   await expect(page).toHaveTitle(/ok/);\n    at /home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts:11:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 2,
+                  "startTime": "2025-05-07T10:52:44.233Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium-retry2/test-failed-1.png"
+                    },
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/app-should-fails-chromium-retry2/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/app.spec.ts",
+                    "column": 14,
+                    "line": 11
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-4c49b825d2e34d900c37",
+          "file": "app.spec.ts",
+          "line": 10,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "example.spec.ts",
+      "file": "example.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "has title",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 394,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-07T10:52:45.207Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a30a6eba6312f6b87ea5-b06063a3e613764d08f8",
+          "file": "example.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "get started link",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 599,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-07T10:52:45.702Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a30a6eba6312f6b87ea5-274e97907a6e3638a22f",
+          "file": "example.spec.ts",
+          "line": 10,
+          "column": 1
+        },
+        {
+          "title": "Should fail",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 3,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                      "column": 16,
+                      "line": 21
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m test(\u001b[32m'Should fail'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({}) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 21 |\u001b[39m   expect(\u001b[36mtrue\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 22 |\u001b[39m })\n \u001b[90m 23 |\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                        "column": 16,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n\n  19 |\n  20 | test('Should fail', async ({}) => {\n> 21 |   expect(true).toBe(false);\n     |                ^\n  22 | })\n  23 |\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-05-07T10:52:46.306Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/example-Should-fail-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                    "column": 16,
+                    "line": 21
+                  }
+                },
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                      "column": 16,
+                      "line": 21
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m test(\u001b[32m'Should fail'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({}) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 21 |\u001b[39m   expect(\u001b[36mtrue\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 22 |\u001b[39m })\n \u001b[90m 23 |\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                        "column": 16,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n\n  19 |\n  20 | test('Should fail', async ({}) => {\n> 21 |   expect(true).toBe(false);\n     |                ^\n  22 | })\n  23 |\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-05-07T10:52:47.027Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/example-Should-fail-chromium-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/example-Should-fail-chromium-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                    "column": 16,
+                    "line": 21
+                  }
+                },
+                {
+                  "workerIndex": 8,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16",
+                    "location": {
+                      "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                      "column": 16,
+                      "line": 21
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 19 |\u001b[39m\n \u001b[90m 20 |\u001b[39m test(\u001b[32m'Should fail'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({}) \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 21 |\u001b[39m   expect(\u001b[36mtrue\u001b[39m)\u001b[33m.\u001b[39mtoBe(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 22 |\u001b[39m })\n \u001b[90m 23 |\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                        "column": 16,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mfalse\u001b[39m\nReceived: \u001b[31mtrue\u001b[39m\n\n  19 |\n  20 | test('Should fail', async ({}) => {\n> 21 |   expect(true).toBe(false);\n     |                ^\n  22 | })\n  23 |\n    at /home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts:21:16"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 2,
+                  "startTime": "2025-05-07T10:52:47.723Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "_error-context-0",
+                      "contentType": "text/markdown",
+                      "path": "/home/runner/work/playwright-tests/playwright-tests/test-results/example-Should-fail-chromium-retry2/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/runner/work/playwright-tests/playwright-tests/tests/example.spec.ts",
+                    "column": 16,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a30a6eba6312f6b87ea5-3ea5ca4fa83ba72684b3",
+          "file": "example.spec.ts",
+          "line": 20,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-05-07T10:52:38.082Z",
+    "duration": 9674.887,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}
