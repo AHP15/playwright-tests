@@ -26,7 +26,8 @@ try {
   - **Skipped**: ${SKIPPED}
   ## Details
   [Report Link](${`https://${owner}.github.io/${repo}/${REPORT_FOLDER}`})
-  [ALL tests Link](${`https://${owner}.github.io/${repo}}/`})
+
+  [ALL Reports Link](${`https://${owner}.github.io/${repo}}/`})
   ## Additional Information
   Last updated: ${new Date().toUTCString()}
   `;
