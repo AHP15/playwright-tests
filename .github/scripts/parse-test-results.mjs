@@ -27,6 +27,7 @@ try {
   flaky = stats.flaky ?? 0;
   skipped = stats.skipped ?? 0;
   total = failed + flaky + skipped;
+  total += stats.expected ?? 0;
   passed = total - failed - flaky;
 
   info(`Parsing successful: Passed=${passed}, Failed=${failed}, Flaky=${flaky}, Skipped=${skipped}`);
