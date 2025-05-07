@@ -13,7 +13,20 @@ try {
   const octokit = getOctokit(token);
   const { owner, repo, number } = context.issue
 
-  const commentBody = `Hey`;
+  const { TOTAL, PASSED, FAILED, FLAKY, SKIPPED, BASE_URL, REPORT_FOLDER } = process.env;
+
+  const commentTitle = `# Plyawright Test Results ${FAILED > 0 ? '❌' : '✅'}`;
+  const commentBody = `
+    ${commentTitle}
+  ## Summary
+  - **Total**: ${TOTAL}
+  - **Passed**: ${PASSED}
+  - **Failed**: ${FAILED}
+  - **Flaky**: ${FLAKY}
+  - **Skipped**: ${SKIPPED}
+  ## Details
+    [Report Link](${BASE_URL}/${REPORT_FOLDER})
+  `;
 
   await octokit.rest.issues.createComment({
     owner,

@@ -31,11 +31,11 @@ jobs:
     name: Run Tests
     needs: wait-for-deployment-url
     runs-on: ubuntu-latest
-    outputs:
-      passed: ${{ steps.extract-test-results.outputs.passed }}
-      failed: ${{ steps.extract-test-results.outputs.failed }}
-      flaky: ${{ steps.extract-test-results.outputs.flaky }}
-      skipped: ${{ steps.extract-test-results.outputs.skipped }}
+    # outputs:
+    #   passed: ${{ steps.extract-test-results.outputs.passed }}
+    #   failed: ${{ steps.extract-test-results.outputs.failed }}
+    #   flaky: ${{ steps.extract-test-results.outputs.flaky }}
+    #   skipped: ${{ steps.extract-test-results.outputs.skipped }}
     env:
       BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -86,4 +86,11 @@ jobs:
           commit_message: "Deploy Playwright test report"
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' }}
+        env:
+          REPORT_FOLDER: ${{ steps.generate-folder-name.outputs.folder_name }}
+          TOTAL: ${{ steps.extract-test-results.outputs.total }}
+          PASSED: ${{ steps.extract-test-results.outputs.passed }}
+          FAILED: ${{ steps.extract-test-results.outputs.failed }}
+          FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
+          SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
         run: node .github/scripts/pr-comment.mjs
