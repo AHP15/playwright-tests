@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 120
     outputs:
-      deployment_url: ${{ steps.wait-for-deployment.outputs.deployment_url }}
+      deployment_url: ${{ steps.wait-for-deployment.outputs.url }}
 
   test:
     name: Run Tests
@@ -58,6 +58,7 @@ jobs:
         id: extract-test-results
         if: always()
         run: node .github/scripts/parse-test-results.mjs
+
       - name: Upload Playwright report artifact
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -65,9 +66,11 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 1
+
       - name: Generate Folder
         id: generate-folder-name
         run: node .github/scripts/generate-folder-name.mjs
+
       - name: Deploy Test report to GH pages
         if: ${{ !cancelled() }}
         uses: peaceiris/actions-gh-pages@v3
@@ -79,6 +82,7 @@ jobs:
           force_orphan: false
           keep_files: true
           commit_message: "Deploy Playwright test report"
+
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -89,6 +93,7 @@ jobs:
           FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
           SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
         run: node .github/scripts/pr-comment.mjs
+
       - name: Update index.html
         if: ${{ !cancelled() }}
         env:
