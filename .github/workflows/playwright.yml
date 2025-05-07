@@ -104,3 +104,13 @@ jobs:
           FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
           SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
         run: node .github/scripts/update-index-html.mjs
+      - name: Create Issue on failing tests
+        if: ${{ github.event_name != 'pull_request' }}
+        run: node .github/scripts/create-issue.mjs
+        env:
+          TOTAL: ${{ steps.extract-test-results.outputs.total }}
+          PASSED: ${{ steps.extract-test-results.outputs.passed }}
+          FAILED: ${{ steps.extract-test-results.outputs.failed }}
+          FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
+          SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
+          REPORT_FOLDER: ${{ steps.generate-folder-name.outputs.folder_name }}
