@@ -57,8 +57,8 @@ try {
 
     // Add, commit, and push changes
     console.log('Committing empty gh-pages branch...');
-    await exec.exec('git', ['add', '-A']);
-    await exec.exec('git', ['commit', '-m', 'Clear gh-pages branch', '--allow-empty']);
+    await exec('git', ['add', '-A']);
+    await exec('git', ['commit', '-m', 'Clear gh-pages branch', '--allow-empty']);
     
     console.log('Pushing changes...');
     await exec.exec('git', ['push', '-f', 'origin', 'gh-pages']);
