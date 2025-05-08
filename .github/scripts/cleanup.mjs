@@ -4,7 +4,6 @@ import process from 'process';
 import { exec } from '@actions/exec';
 import * as fs from 'fs';
 import * as path from 'path';
-import process from 'process';
 
 try {
   const token = process.env.GITHUB_TOKEN || core.getInput('github-token');
