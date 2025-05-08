@@ -21,4 +21,4 @@ jobs:
         run: npm ci
 
       - name: Remove test reports
-        run: node .github/workflows/cleanup.mjs
+        run: node .github/scripts/cleanup.mjs
