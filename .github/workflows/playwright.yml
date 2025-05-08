@@ -50,7 +50,7 @@ jobs:
       - name: Run Playwright tests
         continue-on-error: true
         env:
-          BASE_URL: "https://ff-customer-portal-git-${{ env.GITHUB_REF_NAME }}-egaliti.vercel.app"
+          BASE_URL: "https://playwright-tests-git-${{ env.GITHUB_REF_NAME }}-abdessittir-harkatis-projects.vercel.app"
         run: npx playwright test
 
       - name: extract test results
