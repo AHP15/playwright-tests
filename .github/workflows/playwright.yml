@@ -2,9 +2,10 @@ name: Playwright Test
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev, stg, prod]
   pull_request:
-    branches: [main]
+    types: [opened, synchronize, reopened]
+    branches: [main, dev, stg, prod]
 
 permissions:
   contents: write
@@ -14,27 +15,24 @@ permissions:
   issues: write
 
 jobs:
-  wait-for-deployment-url:
-    runs-on: ubuntu-latest
-    name: Wait for Vercel Deployment URL
-    steps:
-      - name: Wait for 200 status from vercel deployment
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: wait-for-deployment
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 120
-    outputs:
-      deployment_url: ${{ steps.wait-for-deployment.outputs.url }}
-
   test:
     name: Run Tests
-    needs: wait-for-deployment-url
     runs-on: ubuntu-latest
     env:
-      BASE_URL: ${{ needs.wait-for-deployment-url.outputs.deployment_url }}
+      BASE_URL: https://ff-customer-portal-git-${{github.ref_name}}-egaliti.vercel.app
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: wait for deployment to finish
+        run: sleep 60
+
+      - name: Set Pull Request Branch
+        if: github.event_name == 'pull_request'
+        run: echo "GITHUB_REF_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Set Push Branch
+        if: github.event_name != 'pull_request'
+        run: echo "GITHUB_REF_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -52,6 +50,8 @@ jobs:
 
       - name: Run Playwright tests
         continue-on-error: true
+        env:
+          BASE_URL: "https://ff-customer-portal-git-${{ env.GITHUB_REF_NAME }}-egaliti.vercel.app"
         run: npx playwright test
 
       - name: extract test results
