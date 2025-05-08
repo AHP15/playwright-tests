@@ -4,6 +4,13 @@ on:
   push:
     branches: [main, dev, stg, prod]
 
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+  pages: write
+  issues: write
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
