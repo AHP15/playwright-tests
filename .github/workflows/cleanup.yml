@@ -1,8 +1,8 @@
 name: Cleanup Tests Reports
 
 on:
-  schedule:
-    - cron: "*/5 * * * *" # Run every 5 minutes
+  push:
+    branches: [main, dev, stg, prod]
 
 jobs:
   cleanup:
@@ -21,4 +21,4 @@ jobs:
         run: npm ci
 
       - name: Remove test reports
-        run: node .github/workflows/cleanup.mjs
+        run: node .github/scripts/cleanup.mjs
