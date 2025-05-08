@@ -19,7 +19,6 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     env:
-      BASE_URL: https://ff-customer-portal-git-${{github.ref_name}}-egaliti.vercel.app
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: wait for deployment to finish
