@@ -69,7 +69,7 @@ try {
     const { data: comments } = await octokit.rest.issues.listComments({
       owner,
       repo,
-      issue_number: number,
+      //issue_number: number,
     });
 
     const commentTitle = '# Playwright Test Results'
