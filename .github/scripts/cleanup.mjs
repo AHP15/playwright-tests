@@ -61,7 +61,7 @@ try {
     await exec('git', ['commit', '-m', 'Clear gh-pages branch', '--allow-empty']);
     
     console.log('Pushing changes...');
-    await exec.exec('git', ['push', '-f', 'origin', 'gh-pages']);
+    await  exec('git', ['push', '-f', 'origin', 'gh-pages']);
     
     console.log('Successfully cleared gh-pages branch');
 
