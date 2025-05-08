@@ -71,7 +71,7 @@ try {
 
   console.log("Updating comments in open PRs/issues...");
 
-  // Get issues and PRs separately to ensure we process both
+  // Get only OPEN issues and PRs in the repository
   const allOpenIssues = await octokit.paginate(
     octokit.rest.issues.listForRepo,
     {
@@ -79,7 +79,6 @@ try {
       repo,
       state: "open",
       per_page: 100,
-      filter: "all"  // Explicitly request all issues
     }
   );
 
@@ -91,9 +90,6 @@ try {
   let updatedCommentCount = 0;
 
   for (const issue of allOpenIssues) {
-    console.log(`Processing ${issue.pull_request ? "PR" : "Issue"} #${issue.number}`);
-
-    // Get all comments for the issue/PR
     const { data: comments } = await octokit.rest.issues.listComments({
       owner,
       repo,
@@ -101,54 +97,37 @@ try {
       per_page: 100,
     });
 
-    // More flexible matching to catch variations in comment formatting
-    const matchingComments = comments.filter((comment) => 
-      comment.body && (
-        comment.body.trim().startsWith(commentTitle.trim()) || 
-        comment.body.includes(commentTitle.trim())
-      )
+    const matchingComments = comments.filter((comment) =>
+      comment.body.trim().startsWith(commentTitle.trim())
     );
 
     if (matchingComments.length > 0) {
       console.log(
-        `Found ${matchingComments.length} Playwright test comments in ${issue.pull_request ? "PR" : "Issue"} #${issue.number}`
+        `Found ${matchingComments.length} Playwright test comments in open issue/PR #${issue.number}`
       );
     }
 
     for (const comment of matchingComments) {
-      // Update the comment title
-      let newBody = comment.body;
-      if (newBody.includes(commentTitle)) {
-        newBody = newBody.replace(
-          commentTitle,
-          `# Playwright Test Results [DELETED]`
-        );
-      }
+      const newBody = comment.body.replace(
+        commentTitle,
+        `# Playwright Test Results [DELETED]`
+      );
 
       // Add a notice about reports being deleted
       const deletedNotice = `\n\n**NOTICE: All reports have been deleted from the gh-pages branch.**\nDeleted on: ${new Date().toUTCString()}, to see the reports please re-run the test action.`;
 
-      // Make sure we don't duplicate the notice if updating multiple times
-      if (!newBody.includes("**NOTICE: All reports have been deleted")) {
-        newBody += deletedNotice;
-      }
-
       // Update the comment
-      try {
-        await octokit.rest.issues.updateComment({
-          owner,
-          repo,
-          comment_id: comment.id,
-          body: newBody,
-        });
+      await octokit.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: comment.id,
+        body: newBody + deletedNotice,
+      });
 
-        updatedCommentCount++;
-        console.log(
-          `Updated comment ${comment.id} in ${issue.pull_request ? "PR" : "Issue"} #${issue.number} to indicate deletion`
-        );
-      } catch (error) {
-        console.error(`Failed to update comment ${comment.id}: ${error.message}`);
-      }
+      updatedCommentCount++;
+      console.log(
+        `Updated comment ${comment.id} in open issue/PR #${issue.number} to indicate deletion`
+      );
     }
   }
 
