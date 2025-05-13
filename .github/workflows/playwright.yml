@@ -21,9 +21,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: wait for deployment to finish
-        run: sleep 60
-
       - name: Set Pull Request Branch
         if: github.event_name == 'pull_request'
         run: echo "GITHUB_REF_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
@@ -43,6 +40,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: wait for deployment to finish
+        run: node .github/scripts/wait-for-deployment.mjs
 
       - name: Intsall Playwright Browsers
         run: npx playwright install --with-deps
