@@ -44,5 +44,6 @@ try {
 
 } catch (error) {
   core.setFailed(`Error: ${error.message}`);
+  console.error(error);
   process.exit(1);
 }
