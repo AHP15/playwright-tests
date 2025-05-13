@@ -1,6 +1,7 @@
 import { getOctokit, context } from '@actions/github';
 import * as core from '@actions/core';
 import fetch from 'node-fetch';
+import process from "process";
 
 /**
  * Wait for the specified amount of time
