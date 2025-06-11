@@ -21,7 +21,7 @@ if (context.eventName === 'pull_request') {
 console.log(`Directory Prefix: ${prefix}`);
   
 // Combine prefix and date for the destination directory
-const destDir = `${prefix}/${currentDate}`;
+const destDir = `./${prefix}/${currentDate}`;
 console.log(`Final Destination Directory: ${destDir}`);
   
 // Set the calculated directory path as an output variable

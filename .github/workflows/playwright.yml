@@ -1,11 +1,13 @@
 name: Playwright Test
 
+# on:
+  # push:
+  #   branches: [dev, stg, prod]
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  #   branches: [dev, stg, prod]
 on:
-  push:
-    branches: [main, dev, stg, prod]
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [main, dev, stg, prod]
+ deployment_status:
 
 permissions:
   contents: write
@@ -16,6 +18,7 @@ permissions:
 
 jobs:
   test:
+    if: github.event.deployment_status.state == 'success'
     name: Run Tests
     runs-on: ubuntu-latest
     env:
@@ -35,19 +38,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
-          cache: "npm"
+          node-version: 'lts/*'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
-
-      - name: wait for deployment to finish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: node .github/scripts/wait-for-deployment.mjs
 
       - name: Intsall Playwright Browsers
         run: npx playwright install --with-deps
@@ -55,7 +50,7 @@ jobs:
       - name: Run Playwright tests
         continue-on-error: true
         env:
-          BASE_URL: "https://playwright-tests-git-${{ env.GITHUB_REF_NAME }}-abdessittir-harkatis-projects.vercel.app"
+          BASE_URL: ${{ github.event.deployment_status.target_url }}
         run: npx playwright test
 
       - name: extract test results
@@ -85,7 +80,7 @@ jobs:
           destination_dir: ${{ steps.generate-folder-name.outputs.folder_name }}
           force_orphan: false
           keep_files: true
-          commit_message: "Deploy Playwright test report"
+          commit_message: 'Deploy Playwright test report'
 
       - name: Comment on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -108,8 +103,9 @@ jobs:
           FLAKY: ${{ steps.extract-test-results.outputs.flaky }}
           SKIPPED: ${{ steps.extract-test-results.outputs.skipped }}
         run: node .github/scripts/update-index-html.mjs
+
       - name: Create Issue on failing tests
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && steps.extract-test-results.outputs.failed > 0 }}
         run: node .github/scripts/create-issue.mjs
         env:
           TOTAL: ${{ steps.extract-test-results.outputs.total }}
